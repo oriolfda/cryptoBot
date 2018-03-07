@@ -1,0 +1,20 @@
+{
+  "name": "cryptoBot",
+  "version": "0.0.1",
+  "description": "bot crypto-watcher",
+  "main": "cryptoBot.js",
+  "dependencies": {
+    "async-request": "^1.2.0",
+    "full-icu": "^1.2.1",
+    "gauss": "^0.2.12",
+    "request": "^2.83.0",
+    "talib": "^1.0.4",
+    "talib-binding": "^0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -25,7 +25,7 @@ async function main()
     inLow: Watcher.marketData.low
   }
   await Watcher.addIndicator(params)
-
+//
   console.log(Watcher.indicators[0].params);
 //  console.log(Watcher.marketData)
 }

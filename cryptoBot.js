@@ -26,7 +26,7 @@ async function main()
   }
   await Watcher.addIndicator(params)
 //
-  console.log(Watcher.indicators[0].params);
+  console.log(Watcher.indicators[0]);
 //  console.log(Watcher.marketData)
 }
 

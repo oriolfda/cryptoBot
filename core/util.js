@@ -3,7 +3,7 @@ const gauss = require("gauss")
 const talib = require("talib")
 
 //var marketData = new gauss.Vector();
-//
+
 var util = {
   getMarketData: async function(exchange, symbol, limit, period)
   {

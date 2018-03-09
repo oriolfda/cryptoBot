@@ -28,6 +28,8 @@ async function main()
 //
   console.log(Watcher.indicators[0]);
 //  console.log(Watcher.marketData)
+
+
 }
 
 main()

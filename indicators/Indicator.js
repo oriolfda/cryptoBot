@@ -8,11 +8,11 @@ function Indicator() {
   this.result = null //array of results of prices for the created indicator
   this.params = null
 
-  Indicator.prototype.createIndicator = function(params){
+  Indicator.prototype.createIndicator = async function(params){
     let indicator = require(dirs.indicators + params.name + ".js")
     this.name = params.name
     this.params = params
-    this.result = indicator.calculate(params)
+    this.result = await indicator.calculate(params)
     this.id = indicator.createID(params)
   }
 

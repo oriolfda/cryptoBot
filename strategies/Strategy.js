@@ -10,7 +10,7 @@ Function Strategy() {
 
     await myIndicator.setInReal(this.marketData.close)
     await myIndicator.createIndicator(name, period)
-    this.indicators.push(myIndicator)
+    this.indicators.push(myIndicator.clone())
   }
 
 }

@@ -46,15 +46,10 @@ function Watcher(exchange, pair, limit, period){
   }
 
   Watcher.prototype.addIndicator = async function(params){
-    let indicatorsCopy = this.indicators.slice()
     let myIndicator = Indicator
-    console.log("entry");
     await myIndicator.createIndicator(params)
-    indicatorsCopy.push(myIndicator)
-    this.indicators = indicatorsCopy
-    //this.indicators.push(myIndicator)
+    this.indicators.push(myIndicator.clone())
     for (let i=0; i< this.indicators.length; i++){
-    console.log(this.indicators[i].name);
     }
   }
 

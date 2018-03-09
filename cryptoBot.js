@@ -27,7 +27,7 @@ async function main()
   await Watcher.addIndicator(params)
 //
   for (let i=0; i< Watcher.indicators.length; i++){
-  //console.log(Watcher.indicators[i]);  
+    console.log(Watcher.indicators[i]);  
   }
 
 //  console.log(Watcher.marketData)

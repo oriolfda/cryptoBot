@@ -9,11 +9,17 @@ function Indicator() {
   this.params = null
 
   Indicator.prototype.createIndicator = function(params){
-    const indicator = require(dirs.indicators + params.name + ".js")
+    let indicator = require(dirs.indicators + params.name + ".js")
     this.name = params.name
     this.params = params
     this.result = indicator.calculate(params)
     this.id = indicator.createID(params)
+  }
+
+  Indicator.prototype.clone = function(){
+    let cloneIndicator = new Indicator()
+    cloneIndicator.createIndicator(this.params)
+    return cloneIndicator
   }
 
 }

@@ -13,7 +13,7 @@
 //        type: 'integer_range' } ],
 //   outputs: [ { '0': 'line', name: 'outReal', type: 'real', flags: {} } ] }
 
-const talib = require("talib-binding");
+const talib = require("talib-binding")
 //import * as talib from 'talib-binding';
 
 function EMA() {
@@ -24,17 +24,18 @@ function EMA() {
       params.inReal,
       params.period,
       talib.MATypes.EMA,
-    );
+    )
 
-    let begIndex = params.period - 1;
-    let NBElement = ema.length;
+    let begIndex = params.period - 1
+    let NBElement = ema.length
 
     var resultEMA = {
-      outReal: ema,
+      outReal: ema.slice(),
       begIndex: begIndex,
-      NBElement: NBElement
+      NBElement: NBElement,
+      period: params.period
     }
-    //console.log("period: " + period + ", result\n" + resultEMA.outReal);
+    //console.log("period: " + params.period + ", result\n" + resultEMA.outReal);
     return resultEMA
   }
 
@@ -44,4 +45,4 @@ function EMA() {
 
 }
 
-module.exports = new EMA();
+module.exports = new EMA()

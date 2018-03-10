@@ -2,6 +2,7 @@ const util = require("../core/util")
 var dirs = util.dirs()
 const Exchange = require(dirs.exchanges + "Exchange.js")
 const Indicator = require(dirs.indicators + "Indicator.js")
+const Strategy = require(dirs.strategies + "Strategy.js")
 
 function Watcher(exchange, pair, limit, period){
   Exchange.setExchange(exchange)
@@ -13,24 +14,16 @@ function Watcher(exchange, pair, limit, period){
   //array of indicators and strategies
   this.indicators = new Array()
   this.strategies = new Array()
-  this.candles = new Array()
+  this.arrayCandles = new Array()
   this.marketData = new Array()
-
-  Watcher.prototype.addIndicator = function(indicator){
-    this.indicators.push(indicator)
-  }
-
-  Watcher.prototype.addStrategie = function(strategie){
-    this.strategies.push(strategie)
-  }
 
   Watcher.prototype.setMarketData = function(marketData){
     this.marketData = marketData
   }
 
   Watcher.prototype.getMarketData = async function(){
-    this.candles = await this.exchange.getCandles(this.pair, this.limit, this.period)
-    this.marketData = await this.exchange.getMarketData(this.candles)
+    this.arrayCandles = await this.exchange.getCandles(this.pair, this.limit, this.period)
+    this.marketData = await this.exchange.getMarketData(this.arrayCandles)
   }
 
   Watcher.prototype.startWatching = async function(){
@@ -46,11 +39,18 @@ function Watcher(exchange, pair, limit, period){
   }
 
   Watcher.prototype.addIndicator = async function(params){
-    let myIndicator = Indicator
-    await myIndicator.createIndicator(params)
-    this.indicators.push(myIndicator.clone())
-    for (let i=0; i< this.indicators.length; i++){
-    }
+    await Indicator.setParams(params)
+    let myIndicator = await Indicator.clone()
+    //await myIndicator.createIndicator(params)
+    this.indicators.push(myIndicator)
+  }
+
+  Watcher.prototype.addStrategy = async function(params){
+    await Strategy.setParams(params)
+    let myStrategy = await Strategy.clone()
+    //await myStrategy.createStrategy(params)
+
+    await this.strategies.push(myStrategy)
   }
 
 }

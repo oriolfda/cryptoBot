@@ -1,16 +1,28 @@
 const util = require("../core/util")
 var dirs = util.dirs()
-const Indicator = require(dirs.indicators + "Indicator.js")
+const Signal = require(dirs.core + "Signal.js")
 
-Function Strategy() {
-  this.indicators = new Array()
+function Strategy() {
+  this.signals = new Array()
+  this.params = null
 
-  Strategy.prototype.addIndicator = async function(name, period){
-    let myIndicator = Indicator
+  Strategy.prototype.createStrategy = async function(params) {
+    let myStrategy = require(dirs.strategies + params.name + ".js")
+    this.name = params.name
+    this.params = params
+    await myStrategy.init(params)
+    this.signals = await myStrategy.execute(params)
+    //this.id = Indicator.createID(params)
+  }
 
-    await myIndicator.setInReal(this.marketData.close)
-    await myIndicator.createIndicator(name, period)
-    this.indicators.push(myIndicator.clone())
+  Strategy.prototype.clone = async function() {
+    let cloneStrategy = new Strategy()
+    await cloneStrategy.createStrategy(this.params)
+    return cloneStrategy
+  }
+
+  Strategy.prototype.setParams = function(params){
+    this.params = params
   }
 
 }

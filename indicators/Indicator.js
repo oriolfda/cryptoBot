@@ -13,13 +13,17 @@ function Indicator() {
     this.name = params.name
     this.params = params
     this.result = await indicator.calculate(params)
-    this.id = indicator.createID(params)
   }
 
   Indicator.prototype.clone = function(){
     let cloneIndicator = new Indicator()
     cloneIndicator.createIndicator(this.params)
     return cloneIndicator
+  }
+
+  Indicator.prototype.setParams = function(params){
+    this.name = params.name
+    this.params = params
   }
 
 }

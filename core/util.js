@@ -24,6 +24,7 @@ var util = {
       core: ROOT + 'core/',
       exchanges: ROOT + 'exchanges/',
       indicators: ROOT + 'indicators/',
+      strategies: ROOT + 'strategies/',
     }
   },
 

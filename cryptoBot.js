@@ -25,10 +25,22 @@ async function main()
     inLow: Watcher.marketData.low
   }
   await Watcher.addIndicator(params)
+  //console.log(Watcher.indicators[0]);
 //
   for (let i=0; i< Watcher.indicators.length; i++){
-    console.log(Watcher.indicators[i]);  
+//    console.log(Watcher.indicators[i]);
   }
+
+  var params = {
+    name: "TripleEMA_SAR",
+    EMAMin: 14,
+    EMAMid: 20,
+    EMAMax: 45,
+    marketData: Watcher.marketData,
+    arrayCandles: Watcher.arrayCandles
+  }
+  await Watcher.addStrategy(params)
+  console.log(Watcher.strategies[0].signals);
 
 //  console.log(Watcher.marketData)
 

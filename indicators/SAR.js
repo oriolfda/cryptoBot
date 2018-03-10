@@ -23,17 +23,15 @@ var total_SAR = 0
 
 function SAR() {
 
-  SAR.prototype.calculate = function(params){
+  SAR.prototype.calculate = async function(params){
     if (!params.optInAcceleration) {
       params.optInAcceleration = 0.02
-    };
+    }
     if (!params.optInMaximum) {
       params.optInMaximum = 0.2
-    };
-
+    }
     let endIdx = (params.inHigh ? params.inHigh.length -1 : 0)
-
-    const sar = talib.SAR(
+    const sar = await talib.SAR(
       params.inHigh, /* inHigh */
       params.inLow, /* inLow */
       params.optInAcceleration, /* optAcceleration_Factor, optional */
@@ -46,13 +44,14 @@ function SAR() {
     let NBElement = sar.length;
 
     var resultSAR = {
-      outReal: sar,
+      outReal: sar.slice(),
       begIndex: begIndex,
       NBElement: NBElement
     }
 
     total_SAR++
-    return resultSAR;
+    // /console.log("SAR: " + total_SAR + ": " + resultSAR.begIndex)
+    return resultSAR
   }
 
   SAR.prototype.createID = function(params){

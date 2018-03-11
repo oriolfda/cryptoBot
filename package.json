@@ -1,6 +1,6 @@
 {
   "name": "cryptoBot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "bot crypto-watcher",
   "main": "cryptoBot.js",
   "dependencies": {

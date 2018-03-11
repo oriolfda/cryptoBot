@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <style>
+      .candleUP {position:absolute; background-color: green; width: 15px; border:1px}
+      .candleDOWN {position:absolute; background-color: red; width: 15px; border:1px}
+      .candleNeutral {position:absolute; background-color: wite; border-color: black; border:1px; width: 15px}
+      .market {position:absolute; border-color:black; border-width: 1px; border-style: outset;overflow: scroll; height: 800px}
+      .scaleH {position:relative}
+    </style>
+    <script>
+
+      var drawMarket = function(){
+        var Watcher = <%- JSON.stringify(watcher) %>
+        var divMarket = document.getElementById("market")
+        divMarket.style.height = "800px"
+        divMarket.style.width = "1200px"
+        divMarket.style.top = "60px"
+//        window.alert(parseInt(divMarket.style.height))
+
+        var topMarket = parseInt(divMarket.style.top)
+        var topHigh = Math.max(...Watcher.marketData.high)
+        var divisionsH = "10px" //height:800px / divisionsH:10px = 80 divisions
+        //var scaleH = getScale(divisionsH)
+        var scaleH = 100000 //@TODO: take from API symbol tickIncrement
+
+        var step = (Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low))/parseInt(divisionsH)
+        // window.alert(topHigh)
+
+        var arrayCandles = Watcher.arrayCandles
+        var i = 0
+
+        var diffMaxMin = Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low)
+        //window.alert(Math.max(...Watcher.marketData.high) + ", " + Math.min(...Watcher.marketData.low) + ", " + diffMaxMin)
+        var factor = parseFloat(diffMaxMin / (parseInt(divMarket.style.height) / parseInt(divisionsH))).toFixed(6)
+        for (let candle in arrayCandles){
+          let myCandle = new Candle(arrayCandles[candle])
+          let divCandle = document.createElement("div")
+          divCandle.className = (myCandle.type == "UP" ? "candleUP" : myCandle.type == "DOWN" ? "candleDOWN" : "candelNeutral")
+        //  window.alert(step + ", " + divisionsH)
+          let candleHeigth = (myCandle.type == "UP" ? (myCandle.close - myCandle.open) * factor : (myCandle.open - myCandle.close) * factor)
+
+          if (myCandle.type == "UP"){
+            candleHeigth = (myCandle.close - myCandle.open) * parseInt(divMarket.style.height) / diffMaxMin
+          }else if (myCandle.type == "DOWN"){
+            candleHeigth = (myCandle.open - myCandle.close) * parseInt(divMarket.style.height) / diffMaxMin
+          }
+
+          divCandle.style.height = parseInt(candleHeigth).toString() + "px"
+          if (myCandle.type == "UP"){
+            //divCandle.style.top = (myCandle.close * parseInt(divMarket.style.height) / diffMaxMin )
+            divCandle.style.top = ((topHigh * scaleH) - (parseFloat(myCandle.close) * scaleH) * factor) / scaleH * divisionsH
+          } else if (myCandle.type == "DOWN"){
+            //divCandle.style.top = (myCandle.open * parseInt(divMarket.style.height) / diffMaxMin)
+            divCandle.style.top = parseFloat(myCandle.open) * factor * scaleH
+          }
+
+          divCandle.setAttribute("type", myCandle.type)
+          divCandle.setAttribute("open", myCandle.open)
+          divCandle.setAttribute("close", myCandle.close)
+          divCandle.setAttribute("high", myCandle.high)
+          divCandle.setAttribute("low", myCandle.low)
+
+          divCandle.style.left = (((i + 1) * 20)) + "px"
+          let txt = document.createTextNode(".")
+          divCandle.appendChild(txt)
+          i++
+          divMarket.appendChild(divCandle)
+
+          var divScaleH = document.createElement("div")
+          divScaleH.className = "scaleH"
+          divScaleH.style.top = divMarket.style.top
+          divScaleH.style.height = divMarket.style.height
+          divScaleH.style.width = "100px"
+          divScaleH.style.left = divMarket.style.width - divScaleH.style.width
+
+          divScaleH.style.backgroundColor = "lightBlue"
+          divScaleH.appendChild(txt)
+        //  divMarket.appendChild(divScaleH)
+        }
+      }
+
+      function convertDecimal(number){
+        var num = number.toString().replace('.', '')
+        return parseInt(num)
+      }
+
+      function getScale(number){
+        var scale = "1"
+        for (i=1; i<number.toString().length; i++){
+          scale = scale + "0"
+        }
+
+        return parseInt(scale)
+      }
+
+
+      function Candle(candle){
+        this.timestamp = candle.timestamp
+        this.open = candle.open
+        this.close = candle.close
+        this.high = candle.high || candle.max
+        this.low = candle.low || candle.min
+        // if (candle.open > candle.close){
+        //   this.type ="UP"
+        // }else{
+        //   this.type = "DOWN"
+        // }
+        this.type = (parseFloat(candle.open) > parseFloat(candle.close) ? "DOWN" : parseFloat(candle.open) < parseFloat(candle.close) ? "UP" : "")
+      }
+
+    </script>
+  </head>
+
+  <body onload="drawMarket()">
+    <div class="main" id="main" width="1000px" height="800px">
+      <div class="upperInfo" id="uppperInfo" width="1000px" height="100px" />
+      <div class="market" id="market" width="1000px" height="700px" />
+    </div>
+  </body>
+</html>

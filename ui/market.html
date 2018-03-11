@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <style>
+      .candleUP {color:green; width: 5px}
+      .candleDOWN {color:red; width: 5px}
+      .market {background-color:LightBlue}
+    </style>
+    <script>
+      var scaleH = 0.1
+
+      var drawMarket = function(Watcher){
+        var arrayCandles = Watcher.arrayCandles
+        var i = 0
+        for (let candle in arrayCandles){
+          let myCandle = new Candle(arrayCandles[candle])
+          let divCandle = document.createElement("div")
+          divCandle.class = (candle.type = "UP" ? "candleUP" : "candleDOWN")
+          let candleHeigth = (candle.type = "UP" ? (candle.open - candle.close) * scaleH : (candle.close - candle.open) * scale  )
+          divCandle.style.height = candleHeigth
+          divCandle.style.top = candle.open * scaleH
+          divCandle.style.left = i + 1
+          i++
+        }
+      }
+
+      function Candle(candle){
+        this.timestamp = candle.timestamp
+        this.open = candle.open
+        this.close = candle.close
+        this.high = candle.high
+        this.low = candle.low
+        this.type = (this.open > this.close ? "UP" : "DOWN")
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <div class="main" id="main" width="1000px" height="800px">
+      <div class="upperInfo" id="uppperInfo" width="1000px" height="100px">
+      </div>
+      <div class="market" id="market" width="1000px" height="700px">>
+      </div>
+    </div>
+  </body>
+</html>

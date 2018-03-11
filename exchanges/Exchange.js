@@ -1,12 +1,12 @@
 const util = require("../core/util")
 var dirs = util.dirs()
-const hitbtc = require(dirs.exchanges + "hitbtc/Hitbtc.js")
+const Hitbtc = require(dirs.exchanges + "hitbtc/Hitbtc.js")
 
 function Exchange(exchange) {
 
   switch (exchange) {
-    case "hitbtc":
-      this.exchange = hitbtc
+    case "Hitbtc":
+      this.exchange = Hitbtc
       break
   }
 
@@ -16,8 +16,8 @@ function Exchange(exchange) {
 
   Exchange.prototype.setExchange = function(exchange) {
     switch (exchange) {
-      case "hitbtc":
-        this.exchange = hitbtc
+      case "Hitbtc":
+        this.exchange = Hitbtc
         break
     }
   }

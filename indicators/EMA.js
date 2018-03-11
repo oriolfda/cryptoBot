@@ -22,18 +22,17 @@ function EMA() {
   EMA.prototype.calculate = async function(params) {
     const ema = await talib.EMA(
       params.inReal,
-      params.period,
+      parseInt(params.period),
       talib.MATypes.EMA,
     )
 
-    let begIndex = params.period - 1
+  //  let begIndex = parseInt(params.period) - 1
     let NBElement = ema.length
-
     var resultEMA = {
       outReal: ema.slice(),
-      begIndex: begIndex,
+      begIndex: parseInt(params.period) - 1,
       NBElement: NBElement,
-      period: params.period
+      period: parseInt(params.period)
     }
     //console.log("period: " + params.period + ", result\n" + resultEMA.outReal);
     return resultEMA

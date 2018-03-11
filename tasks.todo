@@ -1,18 +1,32 @@
 Main Tasks
-☐ Separate core logic from Exchanges
-☐ Create Candle Object
+✔ Separate core logic from Exchanges @done(2018-03-10 12:29)
+✔ Create Candle Object @done(2018-03-10 12:29)
 ✔ Convert JSON timestamp to local date string @done(2018-03-03 09:34)
+✔ cryptoBot.js --> add express @done(2018-03-10 22:25)
 
 
 Indicators
 ✔ Use talib module for indicators @done(2018-03-03 12:31)
 ✔ PSAR @done(2018-03-03 19:20)
+✔ EMA @done(2018-03-10 22:26)
+
+Strategies
+✔ TripleEMA_SAR @done(2018-03-10 22:26)
+☐ MACD
+☐ Others from Talib
+☐ Other custom strategies
 
 
 
 User Interface
+Data Entry
+✔ Basic Data Entry @done(2018-03-10 22:25)
+✔ Basic results @done(2018-03-10 22:25)
+☐ Beauty
+☐ graphics
 
 Translations
 ☐ català
 
 Exchanges
+✔ hitbtc @done(2018-03-10 12:30)

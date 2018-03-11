@@ -57,10 +57,7 @@ function TripleEMA_SAR() {
     this.vectEma_Min = this.EMA_min.outReal
     this.vectEma_Mid = this.EMA_mid.outReal
     this.vectEma_Max = this.EMA_max.outReal
-
   }
-
-
 
   TripleEMA_SAR.prototype.execute = function() {
     let i = 0; // arrayCandles
@@ -95,7 +92,7 @@ function TripleEMA_SAR() {
           low: this.arrayCandles[candle].low
         })
 
-        if (this.arrayCandles[candle].close != undefined) {
+        if (myCandle.close != undefined) {
           let num = i + 1;
           // console.log(num + "--------------------------------");
           // console.log("timestamp-->", arrayCandles[candle].timestamp);
@@ -103,10 +100,10 @@ function TripleEMA_SAR() {
           // console.log("close------>",arrayCandles[candle].close);
           // console.log("min-------->",arrayCandles[candle].min);
           // console.log("max-------->",arrayCandles[candle].max);
-          let low_value = this.arrayCandles[candle].min;
-          let high_value = this.arrayCandles[candle].max;
-          let close_value = this.arrayCandles[candle].close;
-          let open_value = this.arrayCandles[candle].open;
+          let low_value = myCandle.min;
+          let high_value = myCandle.max;
+          let close_value = myCandle.close;
+          let open_value = myCandle.open;
           if (iSAR >= this.resultSAR.begIndex) {
             var SAR_value = this.resultSAR.outReal[iSAR - 1];
             var prev_iSAR = iSAR - 2;
@@ -115,7 +112,6 @@ function TripleEMA_SAR() {
           if (traceLevel == "debug") {
             console.log("prev_SAR_value: " + prev_SAR_value);
           }
-
           //first time prev_status_SAR is 0.
           if (this.resultSAR.begIndex > i) //no values for PSAR, calculate O-C
           {
@@ -133,7 +129,6 @@ function TripleEMA_SAR() {
               status_SAR = status_SAR * -1;
             }
           }
-
           if (i > this.EMA_min.begIndex) {
             //        console.log("ema(10)---->", vectEma_10[j]);
             //        console.log("ema(20)---->", vectEma_20[k]);
@@ -142,6 +137,7 @@ function TripleEMA_SAR() {
           if (i > this.EMA_mid.begIndex) {
             k++;
           }
+
           if (i >= this.EMA_max.begIndex) {
             //        console.log("ema(100)--->", vectEma_100[l]);
             if (i > this.EMA_max.begIndex) {
@@ -155,7 +151,6 @@ function TripleEMA_SAR() {
 
             if (prev_status_SAR != status_SAR) {
               let mySignal = new Signal("SAR")
-
               if (prev_status_SAR > status_SAR) {
                 mySignal.setType("BUY")
                 //console.log("SAR ALARM--> Buy at " + close_value);
@@ -257,8 +252,6 @@ function TripleEMA_SAR() {
   } else {
     console.log("Not enough info from indicators")
   }
-  // /console.log(this.signals);
-
   return this.signals
 }
 

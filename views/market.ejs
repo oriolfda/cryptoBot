@@ -1,11 +1,102 @@
 <html>
   <head>
     <style>
-      .candleUP {position:absolute; background-color: green; width: 15px; border:1px}
-      .candleDOWN {position:absolute; background-color: red; width: 15px; border:1px}
-      .candleNeutral {position:absolute; background-color: wite; border-color: black; border:1px; width: 15px}
-      .market {position:absolute; border-color:black; border-width: 1px; border-style: outset;overflow-x: scroll; height: 800px}
-      .scaleH {position:absolute}
+
+      #body{background-color: black}
+
+      .market {
+        position:absolute;
+        background-color: black;
+        border-color: #e4e4e4;
+        border-width: 1px;
+        border-style: outset;
+        overflow-x: scroll;
+        height: 800px
+      }
+      .scaleH {
+        position:absolute;
+        background-color: black;
+      }
+      .candleDOWN{
+        position: absolute;
+        background-color: #ff4d4d;
+        width: 15px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: red;
+      }
+      .candleUP{
+        position: absolute;
+        background-color: black;
+        width: 15px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: green;
+      }
+      .candleNeutral {
+        position:absolute;
+        background-color: white;
+        border-color: white;
+        border-width:1px;
+        width: 15px
+      }
+
+      .candleLineLow{
+        width:1px;
+        background-color:#d9d9d9;
+        position:absolute;
+      }
+      .candleLineHigh{
+        width:1px;
+        background-color:#d9d9d9;
+        position:absolute;
+      }
+
+      .pair{
+        position: absolute;
+        height: 100%;
+        color: white;
+        font-size: 40px;
+        font-style:italic;
+        display: table
+      }
+      .pair span{
+        vertical-align: bottom;
+        display: table-cell;
+      }
+
+      .infoOLHC{
+        font-size: 15px;
+        color: white;
+        left: 200px;
+        width:500px;
+        height: 100%;
+        position: absolute;
+        display: table;
+        font-style: italic;
+      }
+
+      .infoOLHC span{
+        vertical-align: bottom;
+        display: table-cell;
+      }
+
+      #infoDiv{
+        top: 0px;
+        position: absolute;
+        height: 60px;
+      }
+
+      #main{
+        position:absolute;
+        height: 100%;
+
+      }
+
+      #market{
+        position: absolute;
+      }
+
     </style>
     <script>
 

@@ -4,13 +4,14 @@
       .candleUP {position:absolute; background-color: green; width: 15px; border:1px}
       .candleDOWN {position:absolute; background-color: red; width: 15px; border:1px}
       .candleNeutral {position:absolute; background-color: wite; border-color: black; border:1px; width: 15px}
-      .market {position:absolute; border-color:black; border-width: 1px; border-style: outset;overflow: scroll; height: 800px}
-      .scaleH {position:relative}
+      .market {position:absolute; border-color:black; border-width: 1px; border-style: outset;overflow-x: scroll; height: 800px}
+      .scaleH {position:absolute}
     </style>
     <script>
 
       var drawMarket = function(){
         var Watcher = <%- JSON.stringify(watcher) %>
+        var divMain = document.getElementById("main")
         var divMarket = document.getElementById("market")
         divMarket.style.height = "800px"
         divMarket.style.width = "1200px"
@@ -19,12 +20,13 @@
 
         var topMarket = parseInt(divMarket.style.top)
         var topHigh = Math.max(...Watcher.marketData.high)
+        var minLow = Math.min(...Watcher.marketData.low)
         var divisionsH = "10px" //height:800px / divisionsH:10px = 80 divisions
         //var scaleH = getScale(divisionsH)
         var scaleH = 100000 //@TODO: take from API symbol tickIncrement
 
         var step = (Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low))/parseInt(divisionsH)
-        // window.alert(topHigh)
+        //window.alert(topHigh + ", " + minLow)
 
         var arrayCandles = Watcher.arrayCandles
         var i = 0
@@ -32,6 +34,7 @@
         var diffMaxMin = Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low)
         //window.alert(Math.max(...Watcher.marketData.high) + ", " + Math.min(...Watcher.marketData.low) + ", " + diffMaxMin)
         var factor = parseFloat(diffMaxMin / (parseInt(divMarket.style.height) / parseInt(divisionsH))).toFixed(6)
+        var totalHeight = parseInt(divMarket.style.height) * 90/100
         for (let candle in arrayCandles){
           let myCandle = new Candle(arrayCandles[candle])
           let divCandle = document.createElement("div")
@@ -44,14 +47,21 @@
           }else if (myCandle.type == "DOWN"){
             candleHeigth = (myCandle.open - myCandle.close) * parseInt(divMarket.style.height) / diffMaxMin
           }
-
+          // window.alert((Math.max(...Watcher.marketData.high) + Math.min(...Watcher.marketData.low)) / myCandle.close)
+          // return
           divCandle.style.height = parseInt(candleHeigth).toString() + "px"
+
           if (myCandle.type == "UP"){
             //divCandle.style.top = (myCandle.close * parseInt(divMarket.style.height) / diffMaxMin )
-            divCandle.style.top = ((topHigh * scaleH) - (parseFloat(myCandle.close) * scaleH) * factor) / scaleH * divisionsH
+            //divCandle.style.top = ((topHigh * scaleH) - (parseFloat(myCandle.close) * scaleH) * factor) / scaleH * divisionsH
+            // divCandle.style.top = parseFloat(myCandle.close) * factor * scaleH
+            divCandle.style.top = totalHeight - (totalHeight * (((myCandle.close - minLow) * 100) / (topHigh - minLow)) / 100)
+            //((valor - min) * 100) / (max - min)
           } else if (myCandle.type == "DOWN"){
             //divCandle.style.top = (myCandle.open * parseInt(divMarket.style.height) / diffMaxMin)
-            divCandle.style.top = parseFloat(myCandle.open) * factor * scaleH
+            //divCandle.style.top = parseFloat(myCandle.open) * factor * scaleH
+            //divCandle.style.top = parseInt(divMarket.style.height) / ((Math.max(...Watcher.marketData.high) + Math.min(...Watcher.marketData.low)) / myCandle.open)
+            divCandle.style.top = totalHeight - (totalHeight * (((myCandle.open - minLow) * 100) / (topHigh - minLow)) / 100)
           }
 
           divCandle.setAttribute("type", myCandle.type)
@@ -65,18 +75,17 @@
           divCandle.appendChild(txt)
           i++
           divMarket.appendChild(divCandle)
-
-          var divScaleH = document.createElement("div")
-          divScaleH.className = "scaleH"
-          divScaleH.style.top = divMarket.style.top
-          divScaleH.style.height = divMarket.style.height
-          divScaleH.style.width = "100px"
-          divScaleH.style.left = divMarket.style.width - divScaleH.style.width
-
-          divScaleH.style.backgroundColor = "lightBlue"
-          divScaleH.appendChild(txt)
-        //  divMarket.appendChild(divScaleH)
         }
+        var divScaleH = document.createElement("div")
+        divScaleH.className = "scaleH"
+        divScaleH.style.top = divMarket.style.top
+        divScaleH.style.height = divMarket.style.height
+        divScaleH.style.width = "60px"
+        divScaleH.style.left = (parseInt(divMarket.style.width)+10) + "px"
+
+        divScaleH.style.backgroundColor = "lightBlue"
+        divScaleH.appendChild(txt)
+        divMain.appendChild(divScaleH)
       }
 
       function convertDecimal(number){
@@ -114,7 +123,7 @@
   <body onload="drawMarket()">
     <div class="main" id="main" width="1000px" height="800px">
       <div class="upperInfo" id="uppperInfo" width="1000px" height="100px" />
-      <div class="market" id="market" width="1000px" height="700px" />
+      <div class="market" id="market" width="1000px" height="800px" />
     </div>
   </body>
 </html>

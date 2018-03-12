@@ -252,6 +252,7 @@ function TripleEMA_SAR() {
   } else {
     console.log("Not enough info from indicators")
   }
+  console.log(this.signals);
   return this.signals
 }
 

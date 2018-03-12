@@ -1,4 +1,4 @@
-// Exponential Moving Average indicator (EMA)
+// Exponential Moving Average indicator (EMA).
 
 // Explanation of talib function
 // { name: 'EMA',

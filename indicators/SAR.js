@@ -1,4 +1,4 @@
-// Parabolic SAR indicator (SAR)
+// Parabolic SAR indicator (SAR).
 
 // Explanation of talib function
 // { name: 'SAR',

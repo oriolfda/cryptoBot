@@ -19,47 +19,45 @@
 //   outputs: [ { '0': 'line', name: 'outReal', type: 'real', flags: {} } ] }
 
 const talib = require("talib-binding");
+var total_SAR = 0
 
-var calculateSAR = function(marketData, optInAcceleration, optInMaximum)
-{
-  if (!optInAcceleration){optInAcceleration=0.02};
-  if (!optInMaximum){optInMaximum=0.2};
+function SAR() {
 
-  const sar = talib.SAR(
-      marketData.high, /* inHigh */
-      marketData.low, /* inLow */
-      optInAcceleration, /* optAcceleration_Factor, optional */
-      optInMaximum, /* optAF_Maximum, optional */
+  SAR.prototype.calculate = async function(params){
+    if (!params.optInAcceleration) {
+      params.optInAcceleration = 0.02
+    }
+    if (!params.optInMaximum) {
+      params.optInMaximum = 0.2
+    }
+    let endIdx = (params.inHigh ? params.inHigh.length -1 : 0)
+    const sar = await talib.SAR(
+      params.inHigh, /* inHigh */
+      params.inLow, /* inLow */
+      params.optInAcceleration, /* optAcceleration_Factor, optional */
+      params.optInMaximum, /* optAF_Maximum, optional */
       0, /* startIdx, optional */
-      marketData.high.length -1 /* endIdx, optional */
-  )
+      endIdx /* endIdx, optional */
+    )
 
-  let begIndex = marketData.high.length - sar.length;
-  let NBElement = sar.length;
+    let begIndex = (params.inHigh ? params.inHigh.length - sar.length : 0)
+    let NBElement = sar.length;
 
-  var resultSAR = {
-    outReal: sar,
-    begIndex: begIndex,
-    NBElement: NBElement
+    var resultSAR = {
+      outReal: sar.slice(),
+      begIndex: begIndex,
+      NBElement: NBElement
+    }
+
+    total_SAR++
+    // /console.log("SAR: " + total_SAR + ": " + resultSAR.begIndex)
+    return resultSAR
   }
 
-  return resultSAR;
+  SAR.prototype.createID = function(params){
+    return params.name + "_" + total_SAR
+  }
 
-
-  // talib.execute({
-  //   name: "SAR",
-  //   startIdx: 0,
-  //   endIdx: marketData.close.length - 1,
-  //   high: marketData.high,
-  //   low: marketData.low,
-  //   inPriceHL: marketData.close,
-  //   optInAcceleration: optInAcceleration,
-  //   optInMaximum: optInMaximum
-  // }, function(err, result) {
-  //   if (result) {
-  //     return result;
-  //   }
-  // });
 }
 
-module.exports.calculateSAR = calculateSAR;
+module.exports = new SAR()

@@ -13,46 +13,35 @@
 //        type: 'integer_range' } ],
 //   outputs: [ { '0': 'line', name: 'outReal', type: 'real', flags: {} } ] }
 
-// const talib = require("talib");
-//
-// var calculateEMA = async function(marketData, period)
-// {
-//   await talib.execute({
-//     name: "EMA",
-//     startIdx: 0,
-//     endIdx: marketData.close.length - 1,
-//     inReal: marketData.close,
-//     optInTimePeriod: period
-//   }, await function(err, result) {
-//     if (result) {
-//       console.log(result);
-//       return result;
-//     }
-//   });
-// }
-
-const talib = require("talib-binding");
+const talib = require("talib-binding")
 //import * as talib from 'talib-binding';
 
-//TA_EMA(startIdx, endIdx, inReal, optTime_Period, &outBegIdx, &outNBElement, outReal);
-var calculateEMA = function(marketData, period)
-{
-  const ema = talib.EMA(
-    marketData.close,
-    period,
-    talib.MATypes.EMA,
-  );
-  let begIndex = period -1;
-  let NBElement = ema.length;
+function EMA() {
 
-  var resultEMA = {
-    outReal: ema,
-    begIndex: begIndex,
-    NBElement: NBElement
+  //TA_EMA(startIdx, endIdx, inReal, optTime_Period, &outBegIdx, &outNBElement, outReal);
+  EMA.prototype.calculate = async function(params) {
+    const ema = await talib.EMA(
+      params.inReal,
+      parseInt(params.period),
+      talib.MATypes.EMA,
+    )
+
+  //  let begIndex = parseInt(params.period) - 1
+    let NBElement = ema.length
+    var resultEMA = {
+      outReal: ema.slice(),
+      begIndex: parseInt(params.period) - 1,
+      NBElement: NBElement,
+      period: parseInt(params.period)
+    }
+    //console.log("period: " + params.period + ", result\n" + resultEMA.outReal);
+    return resultEMA
   }
-  //console.log("period: " + period + ", result\n" + resultEMA.outReal);
-  return resultEMA;
+
+  EMA.prototype.createID = function(params){
+    return params.name + "_" + params.period
+  }
+
 }
 
-
-module.exports.calculateEMA =  calculateEMA;
+module.exports = new EMA()

@@ -81,6 +81,18 @@
         display: table-cell;
       }
 
+      .xDiv{
+        position:relative;
+        background-color: #e4e4e4;
+        left: "0px"
+      }
+
+      .yDiv{
+        position:relative;
+        background-color: #e4e4e4;
+        top: "0px"
+      }
+
       #infoDiv{
         top: 0px;
         position: absolute;
@@ -107,51 +119,49 @@
         divMarket.style.height = "800px"
         divMarket.style.width = "1200px"
         divMarket.style.top = "60px"
+        divMarket.style.left = "0px"
 //        window.alert(parseInt(divMarket.style.height))
 
         var topMarket = parseInt(divMarket.style.top)
         var topHigh = Math.max(...Watcher.marketData.high)
         var minLow = Math.min(...Watcher.marketData.low)
+        //window.alert(topHigh + ", " + minLow)
         var divisionsH = "10px" //height:800px / divisionsH:10px = 80 divisions
         //var scaleH = getScale(divisionsH)
-        var scaleH = 100000 //@TODO: take from API symbol tickIncrement
+//        var scaleH = 100000 //@TODO: take from API symbol tickIncrement
 
         var step = (Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low))/parseInt(divisionsH)
-        //window.alert(topHigh + ", " + minLow)
 
         var arrayCandles = Watcher.arrayCandles
         var i = 0
 
         var diffMaxMin = Math.max(...Watcher.marketData.high) - Math.min(...Watcher.marketData.low)
-        //window.alert(Math.max(...Watcher.marketData.high) + ", " + Math.min(...Watcher.marketData.low) + ", " + diffMaxMin)
+
         var factor = parseFloat(diffMaxMin / (parseInt(divMarket.style.height) / parseInt(divisionsH))).toFixed(6)
         var totalHeight = parseInt(divMarket.style.height) * 90/100
         for (let candle in arrayCandles){
           let myCandle = new Candle(arrayCandles[candle])
           let divCandle = document.createElement("div")
-          divCandle.className = (myCandle.type == "UP" ? "candleUP" : myCandle.type == "DOWN" ? "candleDOWN" : "candelNeutral")
+          divCandle.className = (myCandle.type == "UP" ? "candleUP" : myCandle.type == "DOWN" ? "candleDOWN" : "candleNeutral")
         //  window.alert(step + ", " + divisionsH)
           let candleHeigth = (myCandle.type == "UP" ? (myCandle.close - myCandle.open) * factor : (myCandle.open - myCandle.close) * factor)
 
           if (myCandle.type == "UP"){
-            candleHeigth = (myCandle.close - myCandle.open) * parseInt(divMarket.style.height) / diffMaxMin
+            candleHeigth = ((myCandle.close - myCandle.open) * totalHeight) / diffMaxMin
           }else if (myCandle.type == "DOWN"){
-            candleHeigth = (myCandle.open - myCandle.close) * parseInt(divMarket.style.height) / diffMaxMin
+            candleHeigth = ((myCandle.open - myCandle.close) * totalHeight) / diffMaxMin
+          } else if (myCandle.type == "NEUTRAL"){
+            candleHeigth = 1
           }
-          // window.alert((Math.max(...Watcher.marketData.high) + Math.min(...Watcher.marketData.low)) / myCandle.close)
-          // return
           divCandle.style.height = parseInt(candleHeigth).toString() + "px"
+          divCandle.style.minHeight = "1px"
 
+          //((valor - min) * 100) / (max - min)
           if (myCandle.type == "UP"){
-            //divCandle.style.top = (myCandle.close * parseInt(divMarket.style.height) / diffMaxMin )
-            //divCandle.style.top = ((topHigh * scaleH) - (parseFloat(myCandle.close) * scaleH) * factor) / scaleH * divisionsH
-            // divCandle.style.top = parseFloat(myCandle.close) * factor * scaleH
             divCandle.style.top = totalHeight - (totalHeight * (((myCandle.close - minLow) * 100) / (topHigh - minLow)) / 100)
-            //((valor - min) * 100) / (max - min)
           } else if (myCandle.type == "DOWN"){
-            //divCandle.style.top = (myCandle.open * parseInt(divMarket.style.height) / diffMaxMin)
-            //divCandle.style.top = parseFloat(myCandle.open) * factor * scaleH
-            //divCandle.style.top = parseInt(divMarket.style.height) / ((Math.max(...Watcher.marketData.high) + Math.min(...Watcher.marketData.low)) / myCandle.open)
+            divCandle.style.top = totalHeight - (totalHeight * (((myCandle.open - minLow) * 100) / (topHigh - minLow)) / 100)
+          } else if (myCandle.type == "NEUTRAL"){
             divCandle.style.top = totalHeight - (totalHeight * (((myCandle.open - minLow) * 100) / (topHigh - minLow)) / 100)
           }
 
@@ -162,21 +172,175 @@
           divCandle.setAttribute("low", myCandle.low)
 
           divCandle.style.left = (((i + 1) * 20)) + "px"
-          let txt = document.createTextNode(".")
-          divCandle.appendChild(txt)
+          divCandle.addEventListener("mouseover",
+          function(event) {
+            if (!event) // i.e. the argument is undefined or null
+                event = window.event;
+
+            showOHLC(event, this);
+          })
+
           i++
           divMarket.appendChild(divCandle)
+
+          //candle High and Low Lines
+          let divCandleHigh = document.createElement("div")
+          let divCandleLow = document.createElement("div")
+          divCandleHigh.className = "candleLineHigh"
+          divCandleLow.className = "candleLineLow"
+
+          let candleLineHighSize
+          let candleLineLowSize
+          if (myCandle.type == "UP"){
+            candleLineHighSize = ((myCandle.high - myCandle.close) * totalHeight) / diffMaxMin
+            candleLineLowSize = ((myCandle.open - myCandle.low) * totalHeight) / diffMaxMin
+          } else if (myCandle.type == "DOWN"){
+            candleLineHighSize = ((myCandle.high - myCandle.open) * totalHeight) / diffMaxMin
+            candleLineLowSize = ((myCandle.close - myCandle.low) * totalHeight) / diffMaxMin
+          } else if (myCandle.type == "NEUTRAL") {
+            //Open and close are the same in NEUTRAL, so it could be both values
+            candleLineHighSize = ((myCandle.high - myCandle.open) * totalHeight) / diffMaxMin
+            candleLineLowSize = ((myCandle.open - myCandle.low) * totalHeight) / diffMaxMin
+          }
+
+          divCandleHigh.style.minHeight = candleLineHighSize
+          divCandleHigh.style.height = candleLineHighSize
+          divCandleLow.style.minHeight = candleLineLowSize
+          divCandleLow.style.height = candleLineLowSize
+          divCandleHigh.style.left = parseInt(divCandle.style.left) + (15/2) + "px"
+          divCandleLow.style.left = parseInt(divCandle.style.left) + (15/2) + "px"
+          // divCandleHigh.style.top = totalHeight - (totalHeight * (((myCandle.high - minLow) * 100) / (topHigh - minLow)) / 100)
+          // divCandleLow.style.top = totalHeight - (totalHeight * (((myCandle.low - minLow) * 100) / (topHigh - minLow)) / 100)
+          divCandleHigh.style.top = parseInt(divCandle.style.top) - candleLineHighSize + "px"
+          divCandleLow.style.top = parseInt(divCandle.style.top) + candleHeigth + 2 + "px"
+          divMarket.appendChild(divCandleHigh)
+          divMarket.appendChild(divCandleLow)
+
         }
         var divScaleH = document.createElement("div")
         divScaleH.className = "scaleH"
         divScaleH.style.top = divMarket.style.top
         divScaleH.style.height = divMarket.style.height
+        divScaleH.style.minHeight = "1px"
         divScaleH.style.width = "60px"
         divScaleH.style.left = (parseInt(divMarket.style.width)+10) + "px"
 
-        divScaleH.style.backgroundColor = "lightBlue"
-        divScaleH.appendChild(txt)
+        //divScaleH.appendChild(txt)
         divMain.appendChild(divScaleH)
+
+        //Main Info Area
+        var divPair = document.createElement("div")
+        var infoDiv = document.getElementById("infoDiv")
+        var infoSpan = document.createElement("span")
+        var txtPair = document.createTextNode(Watcher.pair)
+        infoSpan.appendChild(txtPair)
+        divPair.appendChild(infoSpan)
+        divPair.className = "pair"
+        infoDiv.appendChild(divPair)
+
+        divMarket.addEventListener("mousemove",
+        function(event) {
+          if (!event) // i.e. the argument is undefined or null
+              event = window.event;
+
+          drawLine(event);
+        })
+
+        divMarket.addEventListener("mouseout",
+        function(event) {
+          if (!event) // i.e. the argument is undefined or null
+              event = window.event;
+
+          deleteLine(event);
+        })
+
+      }
+
+      function showOHLC(e, myCandle){
+        var infoDiv = document.getElementById("infoDiv")
+        var divOLHC = document.createElement("div")
+        var previousChild = document.getElementById("ohlc")
+        if (previousChild){
+          infoDiv.removeChild(previousChild)
+        }
+
+        divOLHC.id = "ohlc"
+        divOLHC.className = "infoOLHC"
+        //openSpan.id = "ohlc"
+        var txtOpen = document.createTextNode("Open: " + myCandle.getAttribute("open"))
+        var txtClose = document.createTextNode("Close: " + myCandle.getAttribute("close"))
+        var txtHigh = document.createTextNode("High: " + myCandle.getAttribute("high"))
+        var txtLow = document.createTextNode("Low: " + myCandle.getAttribute("low"))
+
+        var openSpan = document.createElement("span")
+        openSpan.appendChild(txtOpen)
+        divOLHC.appendChild(openSpan)
+        var openSpan2 = document.createElement("span")
+        openSpan2.appendChild(txtClose)
+        divOLHC.appendChild(openSpan2)
+        var openSpan3 = document.createElement("span")
+        openSpan3.appendChild(txtHigh)
+        divOLHC.appendChild(openSpan3)
+        var openSpan4 = document.createElement("span")
+        openSpan4.appendChild(txtLow)
+        divOLHC.appendChild(openSpan4)
+
+        infoDiv.appendChild(divOLHC)
+      }
+
+      function deleteLine(event){
+        var x = event.clientX;     // Get the horizontal coordinate
+        var y = event.clientY;     // Get the vertical coordinate
+        var divMarket = document.getElementById("market")
+
+        var previousChildX = document.getElementById("xDiv")
+        if (previousChildX){
+          divMarket.removeChild(previousChildX)
+        }
+
+        var previousChildY = document.getElementById("yDiv")
+        if (previousChildY){
+          divMarket.removeChild(previousChildY)
+        }
+      }
+
+      function drawLine(event){
+        var x = event.clientX;     // Get the horizontal coordinate
+        var y = event.clientY;     // Get the vertical coordinate
+        var divMarket = document.getElementById("market")
+
+        var previousChildX = document.getElementById("xDiv")
+        if (previousChildX){
+          divMarket.removeChild(previousChildX)
+        }
+
+        var previousChildY = document.getElementById("yDiv")
+        if (previousChildY){
+          divMarket.removeChild(previousChildY)
+        }
+
+
+        var xDiv = document.createElement("div")
+        var yDiv = document.createElement("div")
+        xDiv.setAttribute("id", "xDiv")
+        yDiv.setAttribute("id", "yDiv")
+        xDiv.className = "xDiv"
+        yDiv.className = "yDiv"
+
+        xDiv.style.top = y - parseInt(divMarket.style.top)
+        yDiv.style.left = x - parseInt(divMarket.style.left)
+        xDiv.style.width = divMarket.style.width
+        yDiv.style.height = divMarket.style.height
+        xDiv.style.minHeigh = "1px"
+        xDiv.style.minWidth = "1px"
+        yDiv.style.minHeigh = "1px"
+        yDiv.style.minWidth = "1px"
+        yDiv.style.width = "1px"
+        xDiv.style.height = "1px"
+
+        divMarket.appendChild(xDiv)
+        divMarket.appendChild(yDiv)
+
       }
 
       function convertDecimal(number){
@@ -205,16 +369,16 @@
         // }else{
         //   this.type = "DOWN"
         // }
-        this.type = (parseFloat(candle.open) > parseFloat(candle.close) ? "DOWN" : parseFloat(candle.open) < parseFloat(candle.close) ? "UP" : "")
+        this.type = (parseFloat(candle.open) > parseFloat(candle.close) ? "DOWN" : parseFloat(candle.open) < parseFloat(candle.close) ? "UP" : "NEUTRAL")
       }
 
     </script>
   </head>
 
-  <body onload="drawMarket()">
+  <body id="body" onload="drawMarket()">
     <div class="main" id="main" width="1000px" height="800px">
-      <div class="upperInfo" id="uppperInfo" width="1000px" height="100px" />
-      <div class="market" id="market" width="1000px" height="800px" />
+      <div class="infoDiv" id="infoDiv" width="1000px" height="60px"></div>
+      <div class="market" id="market" width="1000px" height="800px"> </div>
     </div>
   </body>
 </html>

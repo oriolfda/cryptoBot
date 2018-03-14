@@ -13,6 +13,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(express.static(path.join(__dirname, 'views')))
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
@@ -38,7 +39,7 @@ app.post('/createStrategy', asyncHandler(async (req, res ) => {
   await Watcher.addStrategy(params)
 //  console.log(Watcher);
 //res.sendFile(path.join(dirs.ui + '/market.html'))
-  res.render('market', {watcher: Watcher})
+  res.render('marketCanvas', {watcher: Watcher})
 //  console.log(Watcher.arrayCandles);
 // /  res.send(Watcher.strategies[0].signals);
 }))

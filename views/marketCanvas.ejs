@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <style>
+
+    #body{background-color: black}
+
+    #infoDiv {
+      top: 0px;
+      position: absolute;
+      height: 60px;
+    }
+
+    #main {
+      position: absolute;
+      height: 100%;
+    }
+
+    #scaleX{
+      position: absolute;
+      height: 30px;
+      top: 830px;
+    }
+
+    #scaleY{
+      position: absolute;
+      width: 60px;
+      left: 1200px;
+      height: 770px;
+      top: 60px;
+    }
+
+
+    #marketCanvas {
+      position: absolute;
+      top:60px;
+    }
+  </style>
+  <script>
+    var Watcher = <%- JSON.stringify(watcher) %>
+  </script>
+</head>
+
+<body id="body">
+  <div id="main">
+    <canvas id="marketCanvas" width="1200" height="770px">
+        Canvas not supported by browser
+    </canvas>
+    <canvas id="scaleY" width="60px" height="770px">
+        Canvas not supported by browser
+    </canvas>
+    <canvas id="scaleX" width="1260px" height="30px">
+        Canvas not supported by browser
+    </canvas>
+
+    <script src="/src/canvas.js"></script>
+    <script>
+      setWatcher(<%- JSON.stringify(watcher) %>)
+      drawGrid('gray', 100, 30);
+      drawAxes();
+    </script>
+  </div>
+
+</body>
+
+</html>

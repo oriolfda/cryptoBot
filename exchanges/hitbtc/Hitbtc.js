@@ -73,9 +73,12 @@ function Hitbtc() {
     //  request = request.defaults({headers: {json: 'true'}});
     //  request.defaults();
     //var response =  await request(urlRequest, {headers: {'Content-Type': 'json'}});
-    var response = await request(urlRequest);
+
+    var options = {proxy:'http://proxy.indra.es:8080'}
+    var request2 = request.defaults(options)
+    var response = await request2(urlRequest);
     //return response.body;
-    return JSON.parse(response.body);
+    return JSON.parse(response.body); 
 
     //
 

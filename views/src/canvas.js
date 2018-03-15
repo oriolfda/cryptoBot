@@ -41,7 +41,7 @@ var canvas = document.getElementById('marketCanvas'),
     canvasX = document.getElementById("scaleX"),
     contextY = canvasY.getContext('2d'),
     contextX = canvasX.getContext('2d'),
-
+    drawingSurfaceImageData, //Guidewires
 
     AXIS_MARGIN = 0,
     AXIS_ORIGIN = { x: AXIS_MARGIN, y: canvas.height-AXIS_MARGIN },
@@ -102,8 +102,8 @@ function Candle(candle){
     this.Top = this.close
     this.Bottom = this.open
   }else{
-    this.Bottom = this.close
     this.Top = this.open
+    this.Bottom = this.close
   }
 }
 
@@ -130,18 +130,14 @@ function drawCandles(candles){
     //((valor - min) * 100) / (max - min)
     var candle = new Candle(candles[i-1])
 
-    var factor = parseFloat((parseInt(canvasX.height) / NUM_VERTICAL_TICKS))
-    //let candleH = ((candle.Top - candle.Bottom) * canvas.height) / dif
-    //let candleH = parseFloat((candle.Top - candle.Bottom) * factor).toFixed(6)
-    let candleH = parseFloat((candle.Top - candle.Bottom) * scaleY)
-    //candleHeigth = ((myCandle.close - myCandle.open) * totalHeight) / diffMaxMin
-    //divCandle.style.top = totalHeight - (totalHeight * (((myCandle.close - minLow) * 100) / (topHigh - minLow)) / 100)
-    //let candleTop = maxValue - (maxValue * (((parseFloat(candle.Top) - minValue) * 100) / dif) / 100)
     //alert("canvasH: " + canvas.height + ", candle.Top: " + candle.Top + ", maxValue: " + maxValue + ", minValue: " + minValue + ", dif: " + dif)
     let candleTop = canvas.height - (canvas.height * (((parseFloat(candle.Top) - minValue) * 100) / dif) / 100)
+    let candleBottom = canvas.height - (canvas.height * (((parseFloat(candle.Bottom) - minValue) * 100) / dif) / 100)
+    let candleH = candleBottom - candleTop
+    let candleW = HORIZONTAL_TICK_SPACING * 0.8
     //alert(candleTop + ", " + candleH)
     //return
-    let candleLeft = i
+    let candleLeft = ((AXIS_ORIGIN_X.x + i) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING/2*0.8)
     context.beginPath()
     if (candle.type == "UP"){
       context.strokeStyle = "#ccff99"
@@ -149,12 +145,17 @@ function drawCandles(candles){
     } else if(candle.type == "DOWN"){
       context.strokeStyle = "red"
       context.fillStyle = "#ff4d4d"
+    } else if(candle.type == "NEUTRAL"){
+      context.strokeStyle = "white"
+      context.fillStyle = "gray"
+
     }
 
+
     context.fillRect(
-      ((AXIS_ORIGIN_X.x + i) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING/2*0.8), //top left X
+        candleLeft, //top left X
         candleTop, //top left Y
-        HORIZONTAL_TICK_SPACING * 0.8, //width
+        candleW, //width
         candleH  //height
     )
 
@@ -345,5 +346,62 @@ function drawHorizontalAxisTicks() {
       contextX.stroke();
    }
 }
+
+// Guidewires.........................................................
+
+// Save and restore drawing surface...................................
+
+function saveDrawingSurface() {
+   drawingSurfaceImageData = context.getImageData(0, 0,
+                             canvas.width,
+                             canvas.height);
+}
+
+function restoreDrawingSurface() {
+   context.putImageData(drawingSurfaceImageData, 0, 0);
+}
+
+
+function windowToCanvas(x, y) {
+   var bbox = canvas.getBoundingClientRect();
+   return { x: x - bbox.left * (canvas.width  / bbox.width),
+            y: y - bbox.top  * (canvas.height / bbox.height) };
+}
+
+function drawHorizontalLine (y) {
+   context.beginPath();
+   context.moveTo(0,y+0.5);
+   context.lineTo(context.canvas.width,y+0.5);
+   context.stroke();
+}
+
+function drawVerticalLine (x) {
+   context.beginPath();
+   context.moveTo(x+0.5,0);
+   context.lineTo(x+0.5,context.canvas.height);
+   context.stroke();
+}
+
+function drawGuidewires(x, y) {
+   context.save();
+   context.strokeStyle = 'rgba(0,0,230,0.4)';
+   context.lineWidth = 0.5;
+   drawVerticalLine(x);
+   drawHorizontalLine(y);
+   context.restore();
+}
+
+canvas.onmousemove = function (e) {
+  var loc;
+  e.preventDefault(); // prevent selections
+  saveDrawingSurface();
+  loc = windowToCanvas(e.clientX, e.clientY);
+  restoreDrawingSurface();
+  //updateRubberband(loc);
+
+  drawGuidewires(loc.x, loc.y);
+};
+
+
 
 // Initialization................................................

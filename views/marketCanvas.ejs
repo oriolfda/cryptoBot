@@ -24,8 +24,8 @@
 
     #scaleY{
       position: absolute;
-      width: 60px;
-      left: 1200px;
+      width: 80px;
+      left: 1180px;
       height: 770px;
       top: 60px;
     }
@@ -43,10 +43,13 @@
 
 <body id="body">
   <div id="main">
-    <canvas id="marketCanvas" width="1200" height="770px">
+    <a href="javascript:moveLeft()">Left</a>
+    &nbsp;
+    <a href="javascript:moveRight()">Right</a>
+    <canvas id="marketCanvas" width="1180" height="770px">
         Canvas not supported by browser
     </canvas>
-    <canvas id="scaleY" width="60px" height="770px">
+    <canvas id="scaleY" width="80px" height="770px">
         Canvas not supported by browser
     </canvas>
     <canvas id="scaleX" width="1260px" height="30px">
@@ -56,8 +59,9 @@
     <script src="/src/canvas.js"></script>
     <script>
       setWatcher(<%- JSON.stringify(watcher) %>)
-      drawGrid('gray', 100, 30);
-      drawAxes();
+      drawGrid('gray', 100, 50)
+      drawAxes()
+      moveLeft()
     </script>
   </div>
 

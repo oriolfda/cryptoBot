@@ -7,6 +7,7 @@ const talib = require("talib");
 
 
 // /var marketData = new gauss.Vector();
+var vectTimes = new gauss.Vector();
 var vectClose = new gauss.Vector();
 var vectOpen = new gauss.Vector();
 var vectLow = new gauss.Vector();
@@ -21,6 +22,7 @@ function Hitbtc() {
   Hitbtc.prototype.getMarketData = function(arrayCandles) {
     for (candle in arrayCandles) {
       if (arrayCandles[candle].close != undefined) {
+        vectTimes.push(parseFloat(arrayCandles[candle].timestamp));
         vectClose.push(parseFloat(arrayCandles[candle].close));
         vectOpen.push(parseFloat(arrayCandles[candle].open));
         vectLow.push(parseFloat(arrayCandles[candle].min));
@@ -31,6 +33,7 @@ function Hitbtc() {
 
     //marketData object for Talib functions
     marketData = {
+      timestamp: vectTimes,
       open: vectOpen,
       close: vectClose,
       high: vectHigh,

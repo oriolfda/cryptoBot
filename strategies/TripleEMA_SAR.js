@@ -252,7 +252,8 @@ function TripleEMA_SAR() {
   } else {
     console.log("Not enough info from indicators")
   }
-  console.log(this.signals);
+  console.log(this.marketData.high.slice(60,119));
+  //console.log(this.signals);
   return this.signals
 }
 

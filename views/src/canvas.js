@@ -87,7 +87,8 @@ var totalEMA = 0 //for indicators colors
 var EMA_COLOR = new Array("#C80D32", "#A6E1F7", "#B65BDE", "#D9F83F"),
     SAR_COLOR = "white"
 var lastPoint = null
-
+var maxValue
+var minValue
 
 // Functions..........................................................
 
@@ -185,8 +186,8 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
 
 
   var scaleY = 10000
-  var maxValue = Math.max(...marketDataHigh, maxValueIndicators)
-  var minValue = Math.min(...marketDataLow, minValueIndicators)
+  maxValue = Math.max(...marketDataHigh, maxValueIndicators)
+  minValue = Math.min(...marketDataLow, minValueIndicators)
   //  alert(maxValue)
   maxValue = maxValue + (maxValue * 20 / scaleY)
   //  alert(maxValue)
@@ -249,11 +250,15 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
 
 
   var value = maxValue
-  for (let i = 1; i <= NUM_VERTICAL_TICKS; i++) {
+  for (let i = 0; i <= canvas.height; i++) {
     contextY.fillStyle = "gray";
     contextY.font = "bold 10px Arial";
-    contextY.fillText(parseFloat(value.toFixed(8).toString()), AXIS_ORIGIN_Y.x + 5, (i * VERTICAL_TICK_SPACING) - (VERTICAL_TICK_SPACING / 2) - 0.75);
-    value = value - stepY
+//    value = value - stepY
+    let placeY = (i == 0 ? 10 : (i * VERTICAL_TICK_SPACING))// - (VERTICAL_TICK_SPACING / 2)
+    let factor = placeY / canvas.height * 100
+    let price = parseFloat(maxValue  - ((maxValue - minValue) / 100) * factor).toFixed(6)
+    contextY.fillText(price, AXIS_ORIGIN_Y.x + 5, placeY);
+
   }
 
   //draw indicators
@@ -276,8 +281,6 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
   while (divScaleX.lastChild) {
     divScaleX.removeChild(divScaleX.lastChild);
   }
-
-
 
   for (let i = 1; i <= NUM_HORIZONTAL_TICKS; i++) {
     var value = marketDataTimes[i - 1]
@@ -400,19 +403,19 @@ function drawGrid() {
     context.stroke();
   }
 
-  for (var i = context.canvas.height; i >= AXIS_TOP; i -= GRID_STEPY) {
-    context.beginPath();
-    context.moveTo(0, i);
-    context.lineTo(context.canvas.width, i);
-    context.stroke();
-  }
-
-  // for (var i = stepy; i < context.canvas.height; i += stepy) {
+  // for (var i = context.canvas.height; i >= AXIS_TOP; i -= GRID_STEPY) {
   //   context.beginPath();
   //   context.moveTo(0, i);
   //   context.lineTo(context.canvas.width, i);
   //   context.stroke();
   // }
+
+  for (var i = 0; i <= context.canvas.height; i += GRID_STEPY) {
+    context.beginPath();
+    context.moveTo(0, i);
+    context.lineTo(context.canvas.width, i);
+    context.stroke();
+  }
 
 
   context.restore();
@@ -482,21 +485,21 @@ function drawVerticalAxis() {
 function drawVerticalAxisTicks() {
   var deltaX;
 
-  for (var i = 1; i < NUM_VERTICAL_TICKS; ++i) {
+  for (var i = 0; i <= NUM_VERTICAL_TICKS; ++i) {
     context.beginPath();
 
     if (i % 5 === 0) deltaX = TICK_WIDTH;
     else deltaX = TICK_WIDTH / 2;
 
     //      context.moveTo(AXIS_ORIGIN.x - deltaX,
-    // contextY.moveTo(AXIS_ORIGIN_Y.x - AXIS_MARGIN - deltaX,
-    //   AXIS_ORIGIN_Y.y - i * VERTICAL_TICK_SPACING);
-    context.moveTo(AXIS_WIDTH - deltaX,
-      AXIS_ORIGIN.y - i * VERTICAL_TICK_SPACING);
+     context.moveTo(AXIS_WIDTH - deltaX,
+       AXIS_TOP + (i * VERTICAL_TICK_SPACING));
+//    context.moveTo(AXIS_WIDTH - deltaX,
+//      AXIS_ORIGIN.y - i * VERTICAL_TICK_SPACING);
 
     //      context.lineTo(AXIS_ORIGIN.x + deltaX,
     context.lineTo(AXIS_WIDTH + deltaX,
-      AXIS_ORIGIN.y - i * VERTICAL_TICK_SPACING);
+      AXIS_TOP + (i * VERTICAL_TICK_SPACING));
 
     context.stroke();
   }
@@ -610,7 +613,9 @@ function drawPrice(h){
   divPrice.style.height = "20px"
   divPrice.style.top = h + parseInt(canvas.offsetTop) - (parseInt(divPrice.style.height)/2)
   divPrice.style.left = parseInt(mainDiv.style.width) - 60
-  let price = "0.0555443" //@todo
+
+  let factor = h / canvas.height * 100
+  let price = parseFloat(maxValue  - ((maxValue - minValue) / 100) * factor).toFixed(6)
   var txtPrice = document.createTextNode(price)
   divPrice.appendChild(txtPrice)
   mainDiv.appendChild(divPrice)

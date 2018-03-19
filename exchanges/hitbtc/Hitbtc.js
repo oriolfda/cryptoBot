@@ -7,12 +7,7 @@ const talib = require("talib");
 
 
 // /var marketData = new gauss.Vector();
-var vectTimes = new gauss.Vector();
-var vectClose = new gauss.Vector();
-var vectOpen = new gauss.Vector();
-var vectLow = new gauss.Vector();
-var vectHigh = new gauss.Vector();
-var vectVolume = new gauss.Vector();
+
 
 var urlAPI_base = "https://api.hitbtc.com/api/2";
 var API_candles = "/public/candles/";
@@ -20,9 +15,15 @@ var API_candles = "/public/candles/";
 function Hitbtc() {
 
   Hitbtc.prototype.getMarketData = function(arrayCandles) {
+    var vectTimes = new gauss.Vector();
+    var vectClose = new gauss.Vector();
+    var vectOpen = new gauss.Vector();
+    var vectLow = new gauss.Vector();
+    var vectHigh = new gauss.Vector();
+    var vectVolume = new gauss.Vector();
     for (candle in arrayCandles) {
       if (arrayCandles[candle].close != undefined) {
-        vectTimes.push(parseFloat(arrayCandles[candle].timestamp));
+        vectTimes.push(arrayCandles[candle].timestamp);
         vectClose.push(parseFloat(arrayCandles[candle].close));
         vectOpen.push(parseFloat(arrayCandles[candle].open));
         vectLow.push(parseFloat(arrayCandles[candle].min));
@@ -77,11 +78,12 @@ function Hitbtc() {
     //  request.defaults();
     //var response =  await request(urlRequest, {headers: {'Content-Type': 'json'}});
 
-    var options = {proxy:'http://proxy.indra.es:8080'}
-    var request2 = request.defaults(options)
-    var response = await request2(urlRequest);
+    // var options = {proxy:'http://proxy.indra.es:8080'}
+    // var request2 = request.defaults(options)
+    // var response = await request2(urlRequest);
+    var response = await request(urlRequest);
     //return response.body;
-    return JSON.parse(response.body); 
+    return JSON.parse(response.body);
 
     //
 

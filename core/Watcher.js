@@ -23,6 +23,7 @@ function Watcher(exchange, pair, limit, period){
 
   Watcher.prototype.getMarketData = async function(){
     this.arrayCandles = await this.exchange.getCandles(this.pair, this.limit, this.period)
+    this.marketData = new Array()
     this.marketData = await this.exchange.getMarketData(this.arrayCandles)
   }
 
@@ -36,6 +37,10 @@ function Watcher(exchange, pair, limit, period){
     this.pair = pair
     this.limit = limit
     this.period = period
+    this.indicators = new Array()
+    this.strategies = new Array()
+    this.arrayCandles = new Array()
+    this.marketData = new Array()    
   }
 
   Watcher.prototype.addIndicator = async function(params){

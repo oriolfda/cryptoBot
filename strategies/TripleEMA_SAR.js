@@ -8,6 +8,7 @@ const Candle = require(dirs.core + "Candle.js")
 var traceLevel = "all"
 
 function TripleEMA_SAR() {
+  this.indicators = new Array()
   this.signals = new Array()
   this.EMA_min = null
   this.EMA_mid = null
@@ -22,27 +23,50 @@ function TripleEMA_SAR() {
   TripleEMA_SAR.prototype.init = async function(initParams) {
     this.arrayCandles = initParams.arrayCandles
     this.marketData = initParams.marketData
-    let params = {
+    this.indicators = new Array()
+    this.signals = new Array()
+    this.EMA_min = null
+    this.EMA_mid = null
+    this.EMA_max = null
+    //vectors & objects for EMA Talib indicators
+    this.vectEma_Min = new gauss.Vector();
+    this.vectEma_Mid = new gauss.Vector();
+    this.vectEma_Max = new gauss.Vector();
+
+
+    //EMA min indicator
+    let params_min = {
       name: "EMA",
       inReal: this.marketData.close,
       period: initParams.EMAMin
     }
+    let myIndicator = Indicator.clone()
+    await myIndicator.createIndicator(params_min)
+    this.EMA_min = await myIndicator.result
+    this.indicators.push(myIndicator)
 
-    let myIndicator = Indicator
-
-    //EMA min indicator
-    await myIndicator.createIndicator(params)
-    this.EMA_min = myIndicator.result
 
     //EMA mid indicator
-    params.period = initParams.EMAMid
-    await myIndicator.createIndicator(params)
-    this.EMA_mid = myIndicator.result
+    let params_mid = {
+      name: "EMA",
+      inReal: this.marketData.close,
+      period: initParams.EMAMid
+    }
+    let myIndicator_2 = Indicator.clone()
+    await myIndicator_2.createIndicator(params_mid)
+    this.EMA_mid = await myIndicator_2.result
+    this.indicators.push(myIndicator_2)
 
     //EMA max indicator
-    params.period = initParams.EMAMax
-    await myIndicator.createIndicator(params)
-    this.EMA_max = myIndicator.result
+    let params_max = {
+      name: "EMA",
+      inReal: this.marketData.close,
+      period: initParams.EMAMax
+    }
+    let myIndicator_3 = Indicator.clone()
+    await myIndicator_3.createIndicator(params_max)
+    this.EMA_max = myIndicator_3.result
+    this.indicators.push(myIndicator_3)
 
     //SAR indicator
     let params_SAR = {
@@ -50,9 +74,11 @@ function TripleEMA_SAR() {
       inHigh: this.marketData.high,
       inLow: this.marketData.low
     }
+    let myIndicator_4 = Indicator.clone()
+    await myIndicator_4.createIndicator(params_SAR)
+    this.resultSAR = myIndicator_4.result
+    this.indicators.push(myIndicator_4)
 
-    await myIndicator.createIndicator(params_SAR)
-    this.resultSAR = myIndicator.result
 
     this.vectEma_Min = this.EMA_min.outReal
     this.vectEma_Mid = this.EMA_mid.outReal
@@ -252,9 +278,15 @@ function TripleEMA_SAR() {
   } else {
     console.log("Not enough info from indicators")
   }
-  console.log(this.marketData.high.slice(60,119));
+  //console.log(this.marketData.high.slice(60,119));
   //console.log(this.signals);
-  return this.signals
+
+  var strategyResult = {
+    indicators: this.indicators,
+    signals: this.signals
+  }
+
+  return strategyResult
 }
 
 }

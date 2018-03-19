@@ -3,12 +3,16 @@
 <head>
   <style>
 
-    #body{background-color: black}
+    #body{background-color: black;
+      overflow-y:hidden;
+    }
 
     #infoDiv {
       top: 0px;
+      width="1200px";
       position: absolute;
       height: 60px;
+
     }
 
     #main {
@@ -16,10 +20,21 @@
       height: 100%;
     }
 
+    #scaleX > div {
+        display: inline-block;
+    }
+    #scaleX:after{
+        content: ' ';
+        width: 100%;
+        display: inline-block;
+    }
+
     #scaleX{
       position: absolute;
       height: 30px;
+      width: 1260px;
       top: 830px;
+      text-align: justify;
     }
 
     #scaleY{
@@ -30,6 +45,41 @@
       top: 60px;
     }
 
+    .pair{
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      color: white;
+      font-size: 40px;
+      font-style:italic;
+      display: table
+    }
+    .pair span{
+      vertical-align: bottom;
+      display: table-cell;
+    }
+
+    .infoOLHC span{
+      vertical-align: bottom;
+      display: table-cell;
+    }
+
+    .infoOLHC{
+      font-size: 15px;
+      color: white;
+      left: 200px;
+      width:700px;
+      height: 100%;
+      position: absolute;
+      display: table;
+      font-style: italic;
+    }
+
+    .timeX{
+      color: white;
+      font-size:8px;
+      width: 100%;
+    }
 
     #marketCanvas {
       position: absolute;
@@ -43,26 +93,29 @@
 
 <body id="body">
   <div id="main">
-    <a href="javascript:moveLeft()">Left</a>
-    &nbsp;
-    <a href="javascript:moveRight()">Right</a>
+    <div id="infoDiv">
+    </div>
     <canvas id="marketCanvas" width="1180" height="770px">
         Canvas not supported by browser
     </canvas>
     <canvas id="scaleY" width="80px" height="770px">
         Canvas not supported by browser
     </canvas>
-    <canvas id="scaleX" width="1260px" height="30px">
+    <!--canvas id="scaleX" width="1260px" height="30px">
         Canvas not supported by browser
-    </canvas>
+    </canva-->
+    <div id="scaleX" width="1260px" height="30px">
+    </div>
 
     <script src="/src/canvas.js"></script>
     <script>
       setWatcher(<%- JSON.stringify(watcher) %>)
-      drawGrid('gray', 100, 50)
-      drawAxes()
-      moveLeft()
-      saveDrawingSurface();
+      // drawGrid()
+      // drawAxes()
+      candlesToShow = getCandles(candleIdx)
+      drawCandles(candlesToShow)
+      showInfo()
+      saveDrawingSurface()
     </script>
   </div>
 

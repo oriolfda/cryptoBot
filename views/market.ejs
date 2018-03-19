@@ -357,8 +357,17 @@
         return parseInt(scale)
       }
 
+      var myTimestamp = new function(){
+
+        myTimestamp.prototype.getDate = new function(timestamp){
+          return new Date(Date.parse(arrayCandles[candle].timestamp)).toLocaleString('ca-ES', 'europe/Frankfurt'));
+        }
+
+
+      }
 
       function Candle(candle){
+        alert(myTimestamp.getDate(candle.timestamp).getMinutes())
         this.timestamp = candle.timestamp
         this.open = candle.open
         this.close = candle.close

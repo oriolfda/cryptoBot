@@ -162,6 +162,17 @@ function drawCandles(candles) {
   var marketDataLow = Watcher.marketData.low.slice(candleIdx, candleIdx + candles.length)
   var marketDataTimes = Watcher.marketData.timestamp.slice(candleIdx, candleIdx + candles.length)
 
+var maxValueIndicators = 0,
+    minValueIndicators = 9999999999999
+
+for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
+  let begIndex = Watcher.strategies[0].indicators[i].result.begIndex
+  let begin = (candleIdx >= begIndex ? candleIdx - begIndex : 0)
+  let outRealShowed = Watcher.strategies[0].indicators[i].result.outReal.slice(begin, begin + candlesToShow.length)
+  maxValueIndicators = Math.max(maxValueIndicators, Math.max(...outRealShowed))
+  minValueIndicators = Math.min(minValueIndicators, Math.min(...outRealShowed))
+}
+
 //Get max value from indicators so they can be showed properly
   // for (let i = 0; i <= candlesToShow.length; i++) {
   //   if (candleIdx < begIndex) {
@@ -174,8 +185,8 @@ function drawCandles(candles) {
 
 
   var scaleY = 10000
-  var maxValue = Math.max(...marketDataHigh)
-  var minValue = Math.min(...marketDataLow)
+  var maxValue = Math.max(...marketDataHigh, maxValueIndicators)
+  var minValue = Math.min(...marketDataLow, minValueIndicators)
   //  alert(maxValue)
   maxValue = maxValue + (maxValue * 20 / scaleY)
   //  alert(maxValue)
@@ -580,9 +591,31 @@ canvas.onmousemove = function(e) {
 
   restoreDrawingSurface();
   drawGuidewires(loc.x, loc.y);
+  drawPrice(loc.y);
+
   //saveDrawingSurface();
 
 };
+
+function drawPrice(h){
+  var mainDiv = document.getElementById("main")
+  var previousDiv = document.getElementById("divPrice")
+  if (previousDiv){
+    mainDiv.removeChild(previousDiv)
+  }
+  var divPrice = document.createElement("div")
+  divPrice.id = "divPrice"
+  divPrice.className = "divPrice"
+
+  divPrice.style.height = "20px"
+  divPrice.style.top = h + parseInt(canvas.offsetTop) - (parseInt(divPrice.style.height)/2)
+  divPrice.style.left = parseInt(mainDiv.style.width) - 60
+  let price = "0.0555443" //@todo
+  var txtPrice = document.createTextNode(price)
+  divPrice.appendChild(txtPrice)
+  mainDiv.appendChild(divPrice)
+
+}
 
 //Main Info Area
 function showInfo() {

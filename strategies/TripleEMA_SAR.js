@@ -40,7 +40,8 @@ function TripleEMA_SAR() {
       inReal: this.marketData.close,
       period: initParams.EMAMin
     }
-    let myIndicator = Indicator.clone()
+    Indicator.setParams(params_min)
+    let myIndicator = await Indicator.clone()
     await myIndicator.createIndicator(params_min)
     this.EMA_min = await myIndicator.result
     this.indicators.push(myIndicator)
@@ -285,7 +286,7 @@ function TripleEMA_SAR() {
     indicators: this.indicators,
     signals: this.signals
   }
-
+  console.log(this.signals);
   return strategyResult
 }
 

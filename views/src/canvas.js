@@ -329,7 +329,7 @@ function drawSignals(strategy) {
           context.fillStyle = "rgba(248,80,63,0.2)"
         }
         context.fillRect(
-          Math.round(j * HORIZONTAL_TICK_SPACING) - ((HORIZONTAL_TICK_SPACING / 2) * 0.8),
+          Math.round((j+1) * HORIZONTAL_TICK_SPACING) - ((HORIZONTAL_TICK_SPACING / 2) * 0.8),
           0,
           (HORIZONTAL_TICK_SPACING) * 0.8,
           canvas.height
@@ -340,7 +340,7 @@ function drawSignals(strategy) {
         context.restore()
         //write kind of signal
         context.save()
-        let newx = Math.round(j * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2)
+        let newx = Math.round((j+1) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2)
         let newy = 10
         context.translate(newx, newy)
         context.rotate(Math.PI / 2);
@@ -376,7 +376,7 @@ function drawIndicator(indicator, maxValue, minValue) {
         }
 
         if (typeof value !== 'undefined') {
-          let valueX = ((AXIS_ORIGIN_X.x + i) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2 * 0.1)
+          let valueX = ((AXIS_ORIGIN_X.x + i + 1) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2 * 0.1)
           let valueY = canvas.height - (canvas.height * (((parseFloat(value) - minValue) * 100) / (maxValue - minValue) / 100))
           context.save()
           context.beginPath()
@@ -408,7 +408,7 @@ function drawIndicator(indicator, maxValue, minValue) {
     case "SAR":
       for (let i = 0; i <= candlesToShow.length; i++) {
         if (candleIdx < begIndex) {
-          if (i > begIndex) {
+          if (i >= begIndex) {
             value = indicator.result.outReal[candleIdx + i - begIndex]
           }
         } else {
@@ -416,7 +416,7 @@ function drawIndicator(indicator, maxValue, minValue) {
         }
 
         if (typeof value !== 'undefined') {
-          let valueX = ((AXIS_ORIGIN.x + i) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2 * 0.05)
+          let valueX = ((AXIS_ORIGIN.x + i + 1) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2 * 0.05)
           let valueY = canvas.height - (canvas.height * (((parseFloat(value) - minValue) * 100) / (maxValue - minValue) / 100))
           context.save()
           context.beginPath()

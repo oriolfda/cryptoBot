@@ -143,9 +143,9 @@ function TripleEMA_SAR() {
           if (this.resultSAR.begIndex > i) //no values for PSAR, calculate O-C
           {
             if (open_value - close_value < 0) {
-              status_SAR = -1;
-            } else {
               status_SAR = 1;
+            } else {
+              status_SAR = -1;
             }
           } else {
             if ((parseFloat(prev_SAR_value) <= parseFloat(close_value) &&

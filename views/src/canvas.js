@@ -85,7 +85,7 @@ var candleIdx = 0
 var candlesToShow = new Array()
 var totalEMA = 0 //for indicators colors
 var EMA_COLOR = new Array("#C80D32", "#A6E1F7", "#B65BDE", "#D9F83F"),
-    SAR_COLOR = "white"
+  SAR_COLOR = "white"
 var lastPoint = null
 var maxValue
 var minValue
@@ -163,18 +163,18 @@ function drawCandles(candles) {
   var marketDataLow = Watcher.marketData.low.slice(candleIdx, candleIdx + candles.length)
   var marketDataTimes = Watcher.marketData.timestamp.slice(candleIdx, candleIdx + candles.length)
 
-var maxValueIndicators = 0,
+  var maxValueIndicators = 0,
     minValueIndicators = 9999999999999
 
-for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
-  let begIndex = Watcher.strategies[0].indicators[i].result.begIndex
-  let begin = (candleIdx >= begIndex ? candleIdx - begIndex : 0)
-  let outRealShowed = Watcher.strategies[0].indicators[i].result.outReal.slice(begin, begin + candlesToShow.length)
-  maxValueIndicators = Math.max(maxValueIndicators, Math.max(...outRealShowed))
-  minValueIndicators = Math.min(minValueIndicators, Math.min(...outRealShowed))
-}
+  for (let i = 0; i < Watcher.strategies[0].indicators.length; i++) {
+    let begIndex = Watcher.strategies[0].indicators[i].result.begIndex
+    let begin = (candleIdx >= begIndex ? candleIdx - begIndex : 0)
+    let outRealShowed = Watcher.strategies[0].indicators[i].result.outReal.slice(begin, begin + candlesToShow.length)
+    maxValueIndicators = Math.max(maxValueIndicators, Math.max(...outRealShowed))
+    minValueIndicators = Math.min(minValueIndicators, Math.min(...outRealShowed))
+  }
 
-//Get max value from indicators so they can be showed properly
+  //Get max value from indicators so they can be showed properly
   // for (let i = 0; i <= candlesToShow.length; i++) {
   //   if (candleIdx < begIndex) {
   //     if (i >= begIndex) {
@@ -253,10 +253,10 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
   for (let i = 0; i <= canvas.height; i++) {
     contextY.fillStyle = "gray";
     contextY.font = "bold 10px Arial";
-//    value = value - stepY
-    let placeY = (i == 0 ? 10 : (i * VERTICAL_TICK_SPACING))// - (VERTICAL_TICK_SPACING / 2)
+    //    value = value - stepY
+    let placeY = (i == 0 ? 10 : (i * VERTICAL_TICK_SPACING)) // - (VERTICAL_TICK_SPACING / 2)
     let factor = placeY / canvas.height * 100
-    let price = parseFloat(maxValue  - ((maxValue - minValue) / 100) * factor).toFixed(6)
+    let price = parseFloat(maxValue - ((maxValue - minValue) / 100) * factor).toFixed(6)
     contextY.fillText(price, AXIS_ORIGIN_Y.x + 5, placeY);
 
   }
@@ -272,6 +272,7 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
     for (indicator in Watcher.strategies[0].indicators) {
       drawIndicator(Watcher.strategies[0].indicators[indicator], maxValue, minValue)
     }
+    drawSignals(Watcher.strategies[0])
   }
 
 
@@ -309,6 +310,52 @@ for (let i = 0; i < Watcher.strategies[0].indicators.length; i++){
 
 }
 
+function drawSignals(strategy) {
+  let signals = strategy.signals
+  for (i = 0; i < signals.length; i++) {
+    let timestamp = signals[i].candle.timestamp
+    let signalType = signals[i].type
+    let signalFrom = signals[i].from
+
+    for (j = 0; j < candlesToShow.length; j++) {
+      timestamp2 = candlesToShow[j].timestamp
+      if (timestamp === timestamp2) {
+        //saveDrawingSurface()
+        context.save()
+        context.beginPath();
+        if (signalType == "BUY") {
+          context.fillStyle = "rgba(187,255,111,0.2)"
+        } else { //SELL
+          context.fillStyle = "rgba(248,80,63,0.2)"
+        }
+        context.fillRect(
+          Math.round(j * HORIZONTAL_TICK_SPACING) - ((HORIZONTAL_TICK_SPACING / 2) * 0.8),
+          0,
+          (HORIZONTAL_TICK_SPACING) * 0.8,
+          canvas.height
+        )
+        //context.moveTo(x+0.5,0);
+        //context.lineTo(x+0.5,context.canvas.height);
+        context.stroke()
+        context.restore()
+        //write kind of signal
+        context.save()
+        let newx = Math.round(j * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2)
+        let newy = 10
+        context.translate(newx, newy)
+        context.rotate(Math.PI / 2);
+        context.textAlign = "center"
+        context.font = HORIZONTAL_TICK_SPACING + "px bold"//"20px bold"
+        context.fillStyle = "white"
+        context.fillText(signalFrom, 30, -2)
+        context.restore()
+
+        //restoreDrawingSurface()
+      }
+    }
+
+  }
+}
 
 function drawIndicator(indicator, maxValue, minValue) {
   var type = indicator.name
@@ -321,7 +368,7 @@ function drawIndicator(indicator, maxValue, minValue) {
       lastPoint = undefined
       for (let i = 0; i <= candlesToShow.length; i++) {
         if (candleIdx < begIndex) {
-          if (i >= begIndex) {
+          if (i > begIndex) {
             value = indicator.result.outReal[candleIdx + i - begIndex]
           }
         } else {
@@ -338,7 +385,7 @@ function drawIndicator(indicator, maxValue, minValue) {
           context.fillStyle = EMA_COLOR[totalEMA]
           context.fillRect(valueX, valueY, HORIZONTAL_TICK_SPACING * 0.1, HORIZONTAL_TICK_SPACING * 0.1)
           context.restore()
-          if (typeof lastPoint !== 'undefined'){
+          if (typeof lastPoint !== 'undefined') {
             context.save()
             context.beginPath()
             context.strokeStyle = EMA_COLOR[totalEMA]
@@ -348,7 +395,10 @@ function drawIndicator(indicator, maxValue, minValue) {
             context.stroke()
             context.restore()
           }
-          lastPoint = {x: valueX, y: valueY}
+          lastPoint = {
+            x: valueX,
+            y: valueY
+          }
           //context.stroke()
 
         }
@@ -356,7 +406,29 @@ function drawIndicator(indicator, maxValue, minValue) {
       totalEMA++
       break
     case "SAR":
+      for (let i = 0; i <= candlesToShow.length; i++) {
+        if (candleIdx < begIndex) {
+          if (i > begIndex) {
+            value = indicator.result.outReal[candleIdx + i - begIndex]
+          }
+        } else {
+          value = indicator.result.outReal[candleIdx + i - begIndex]
+        }
 
+        if (typeof value !== 'undefined') {
+          let valueX = ((AXIS_ORIGIN.x + i) * HORIZONTAL_TICK_SPACING) - (HORIZONTAL_TICK_SPACING / 2 * 0.05)
+          let valueY = canvas.height - (canvas.height * (((parseFloat(value) - minValue) * 100) / (maxValue - minValue) / 100))
+          context.save()
+          context.beginPath()
+          // context.moveTo(valueX, valueY)
+          var radius = 3;
+          context.fillStyle = SAR_COLOR
+          context.arc(valueX, valueY, radius, 0, 2 * Math.PI, false);
+          context.fill();
+          //context.fillRect(valueX, valueY, HORIZONTAL_TICK_SPACING * 0.1, HORIZONTAL_TICK_SPACING * 0.2)
+          context.restore()
+        }
+      }
       break
   }
 
@@ -492,10 +564,10 @@ function drawVerticalAxisTicks() {
     else deltaX = TICK_WIDTH / 2;
 
     //      context.moveTo(AXIS_ORIGIN.x - deltaX,
-     context.moveTo(AXIS_WIDTH - deltaX,
-       AXIS_TOP + (i * VERTICAL_TICK_SPACING));
-//    context.moveTo(AXIS_WIDTH - deltaX,
-//      AXIS_ORIGIN.y - i * VERTICAL_TICK_SPACING);
+    context.moveTo(AXIS_WIDTH - deltaX,
+      AXIS_TOP + (i * VERTICAL_TICK_SPACING));
+    //    context.moveTo(AXIS_WIDTH - deltaX,
+    //      AXIS_ORIGIN.y - i * VERTICAL_TICK_SPACING);
 
     //      context.lineTo(AXIS_ORIGIN.x + deltaX,
     context.lineTo(AXIS_WIDTH + deltaX,
@@ -600,10 +672,10 @@ canvas.onmousemove = function(e) {
 
 };
 
-function drawPrice(h){
+function drawPrice(h) {
   var mainDiv = document.getElementById("main")
   var previousDiv = document.getElementById("divPrice")
-  if (previousDiv){
+  if (previousDiv) {
     mainDiv.removeChild(previousDiv)
   }
   var divPrice = document.createElement("div")
@@ -611,11 +683,11 @@ function drawPrice(h){
   divPrice.className = "divPrice"
 
   divPrice.style.height = "20px"
-  divPrice.style.top = h + parseInt(canvas.offsetTop) - (parseInt(divPrice.style.height)/2)
-  divPrice.style.left = parseInt(mainDiv.style.width) - 60
+  divPrice.style.top = h + parseInt(canvas.offsetTop) - (parseInt(divPrice.style.height) / 2)
+  divPrice.style.left = parseInt(mainDiv.style.width) - 80
 
   let factor = h / canvas.height * 100
-  let price = parseFloat(maxValue  - ((maxValue - minValue) / 100) * factor).toFixed(6)
+  let price = parseFloat(maxValue - ((maxValue - minValue) / 100) * factor).toFixed(6)
   var txtPrice = document.createTextNode(price)
   divPrice.appendChild(txtPrice)
   mainDiv.appendChild(divPrice)
